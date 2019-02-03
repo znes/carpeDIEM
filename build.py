@@ -43,7 +43,7 @@ showcase_identifier = list("ABCDEFG")
 
 for showcase in showcase_identifier:
 
-    new_path = os.path.join(copypath, showcase)
+    new_path = os.path.abspath(os.path.join(copypath, showcase))
 
     processing.copy_datapackage(old_path, new_path, subset='data')
 
