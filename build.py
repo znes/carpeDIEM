@@ -57,17 +57,17 @@ for showcase in showcase_identifier:
 
     if showcase in 'ABDEFG':
         update_field(
-            'volatile.csv', 'DE-pv', 'capacity', lambda x: x - 2940,
+            'volatile.csv', 'DE-pv', 'capacity', lambda x: x - 2.940,
             directory=os.path.join(new_path, 'data/elements'))
 
     if showcase == 'C':
         update_field(
-            'volatile.csv', 'DE-pv', 'capacity', lambda x: x - 4269,
+            'volatile.csv', 'DE-pv', 'capacity', lambda x: x - 4.269,
             directory=os.path.join(new_path, 'data/elements'))
 
     if showcase in 'EF':
         update_field(
-            'volatile.csv', 'DE-wind-onshore', 'capacity', lambda x: x - 1000,
+            'volatile.csv', 'DE-wind-onshore', 'capacity', lambda x: x - 1.000,
             directory=os.path.join(new_path, 'data/elements'))
 
     building.infer_metadata(
