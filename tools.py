@@ -144,7 +144,7 @@ def connect_bordelum_residual(showcase, basepath, archive='archive'):
     timeseries = pd.read_csv(
         os.path.join(archive, 'Bordelum-residual-load.csv'),
         index_col='timeindex'
-    )['C']
+    )[showcase]
 
     element = {
         'BO-generation':
