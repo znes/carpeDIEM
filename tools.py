@@ -89,7 +89,7 @@ def substract_bordelum_load(basepath, archive='archive', correction=1):
 
     Notes
     -----
-    `Bordelum-load.csv` containing column `BO-load-profile` is expected to
+    `Bordelum-profiles.csv` containing column `BO-load-profile` is expected to
     exist in the archive directory.
     """
 
@@ -104,7 +104,7 @@ def substract_bordelum_load(basepath, archive='archive', correction=1):
         'load_profile.csv', directory=sequences_path)[name + '-profile']
 
     load_diff = pd.read_csv(
-        os.path.join(archive, 'Bordelum-load.csv'),
+        os.path.join(archive, 'Bordelum-profiles.csv'),
         index_col='timeindex'
     ) * correction
 
