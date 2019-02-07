@@ -146,46 +146,52 @@ def connect_bordelum_residual(showcase, basepath, archive='archive'):
         index_col='timeindex'
     )[showcase]
 
-    element = {
-        'BO-generation':
-        {
-            'bus': 'DE-electricity',
-            'tech': '',
-            'carrier': '',
-            'capacity': 1,
-            'profile': 'BO-generation-profile',
-            'marginal_cost': 0,
-            'type': 'volatile'
-        }
-    }
-
     sequence = timeseries.apply(lambda z: z if z > 0 else 0)
     sequence.name = 'BO-generation-profile'
 
-    write_elements(
-        'volatile.csv', pd.DataFrame(element).T, directory=elements_path)
-    write_sequences('volatile_profile.csv', sequence, directory=sequences_path)
+    if sequence.sum() > 0:
+
+        element = {
+            'BO-generation':
+            {
+                'bus': 'DE-electricity',
+                'tech': '',
+                'carrier': '',
+                'capacity': 1,
+                'profile': 'BO-generation-profile',
+                'marginal_cost': 0,
+                'type': 'volatile'
+            }
+        }
+
+
+        write_elements(
+            'volatile.csv', pd.DataFrame(element).T, directory=elements_path)
+        write_sequences(
+            'volatile_profile.csv', sequence, directory=sequences_path)
 
     sequence = timeseries.apply(lambda y: y if y < 0 else 0).abs()
     sequence.name = 'BO-load-profile'
 
-    element = {
-        'BO-load':
-        {
-            'bus': 'DE-electricity',
-            'tech': 'load',
-            'amount': sequence.sum(),
-            'profile': 'BO-load-profile',
-            'type': 'load'
-        }
-    }
+    if sequence.sum() > 0:
 
-    write_elements(
-        'load.csv', pd.DataFrame(element).T, directory=elements_path)
-    write_sequences(
-        'load_profile.csv',
-        sequence / sequence.sum(),
-        directory=sequences_path
-    )
+        element = {
+            'BO-load':
+            {
+                'bus': 'DE-electricity',
+                'tech': 'load',
+                'amount': sequence.sum(),
+                'profile': 'BO-load-profile',
+                'type': 'load'
+            }
+        }
+
+        write_elements(
+            'load.csv', pd.DataFrame(element).T, directory=elements_path)
+        write_sequences(
+            'load_profile.csv',
+            sequence / sequence.sum(),
+            directory=sequences_path
+        )
 
     return None
