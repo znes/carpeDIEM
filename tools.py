@@ -124,6 +124,58 @@ def substract_bordelum_load(basepath, archive='archive', correction=1):
     return None
 
 
+def substract_bordelum_profile(
+    base_path, element_name, field, value, profile, ressource, archive='archive'):
+    """ Substract bordelum profiles from German electricity bus
+
+    Parameters
+    ----------
+    basepath : str
+        Basepath of datapackage.
+    element_name : str
+        Element to be changed.
+    field : str
+        Field entry to be changed.
+    value : float or int
+        Value of field entry for Bordelum, e.g. value of installed capacity.
+    profile : str
+        Name of the associated profile in `Bordelum-profiles.csv`.
+    ressource: str
+        E.g. `volatile`.
+    """
+
+    elements_path = os.path.join(base_path, 'data/elements')
+    sequences_path = os.path.join(base_path, 'data/sequences')
+
+    # get element
+    element_old = read_elements(ressource + '.csv', directory=elements_path).\
+        loc[element_name, :]
+
+    seq_old = read_sequences(
+        ressource + '_profile.csv',
+        directory=sequences_path)[element_name + '-profile']
+
+    # substract actual Bordelum sequence from actual sequence
+    seq_actual = element_old[field] * seq_old - \
+        (pd.read_csv(os.path.join(archive, 'Bordelum-profiles.csv'),
+                index_col='timeindex'
+            )[profile] * value)
+
+    # clip negative values
+    seq_actual = seq_actual.apply(lambda x: x if x > 0 else 0)
+
+    element_new = element_old.copy()
+    element_new[field] -= value
+
+    seq_new = seq_actual / element_new[field]
+    seq_new.name = element_name + '-profile'
+
+    update_element(ressource + '.csv', element_new, directory=elements_path)
+    update_sequence(ressource + '_profile.csv', seq_new, directory=sequences_path)
+
+    return None
+
+
 def connect_bordelum_residual(showcase, basepath, archive='archive'):
     """ Attach subsystem optimization results to the German electricity bus
 
