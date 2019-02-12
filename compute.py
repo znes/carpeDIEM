@@ -18,6 +18,8 @@ from oemof.tabular.datapackage import processing
 from oemof.solph import EnergySystem, Model, Bus
 from oemof.tabular.tools import postprocessing as pp
 
+import pyomo.core as po
+
 
 def compute(pk):
 
@@ -44,6 +46,17 @@ def compute(pk):
     #     os.path.join(base_path, 'tmp.lp'),
     #     io_options={"symbolic_solver_labels":True})
 
+    flows = {}
+    for (i, o) in m.flows:
+        if hasattr(m.flows[i, o], 'emission_factor'):
+            flows[(i, o)] = m.flows[i, o]
+
+    m.total_emissions =  po.Expression(
+        expr=sum(m.flow[inflow, outflow, t] * m.timeincrement[t] *
+                 flows[inflow, outflow].emission_factor
+                 for (inflow, outflow) in flows
+                 for t in m.TIMESTEPS))
+
     m.receive_duals()
 
     m.solve('gurobi')
@@ -56,6 +69,7 @@ def compute(pk):
     modelstats = outputlib.processing.meta_results(m)
     modelstats.pop("solver")
     modelstats["problem"].pop("Sense")
+    modelstats["total-emissions"] = m.total_emissions()
 
     with open(os.path.join(base_path, "modelstats.json"), "w") as outfile:
         json.dump(modelstats, outfile, indent=4)

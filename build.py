@@ -7,8 +7,7 @@ import os
 import shutil
 
 from oemof.tabular.datapackage import building, processing
-from tools import update_field, substract_bordelum_load, \
-    connect_bordelum_residual
+from tools import substract_bordelum_profile, connect_bordelum_residual
 
 archive = 'archive'
 copypath = 'datapackages'
@@ -50,25 +49,25 @@ for showcase in showcase_identifier:
     connect_bordelum_residual(showcase, new_path)
 
     if showcase in 'ABCDEF':
-        substract_bordelum_load(new_path)
+        substract_bordelum_profile(
+            new_path, 'DE-load', 'amount', 974, 'BO-load-profile', 'load')
 
     if showcase == 'G':
-        substract_bordelum_load(new_path, correction=2)
+        substract_bordelum_profile(
+            new_path, 'DE-load', 'amount', 974 * 2, 'BO-load-profile', 'load')
 
     if showcase in 'ABDEFG':
-        update_field(
-            'volatile.csv', 'DE-pv', 'capacity', lambda x: x - 2.940,
-            directory=os.path.join(new_path, 'data/elements'))
+        substract_bordelum_profile(
+            new_path, 'DE-pv', 'capacity', 2.94, 'BO-pv-profile', 'volatile')
 
     if showcase == 'C':
-        update_field(
-            'volatile.csv', 'DE-pv', 'capacity', lambda x: x - 4.269,
-            directory=os.path.join(new_path, 'data/elements'))
+        substract_bordelum_profile(
+            new_path, 'DE-pv', 'capacity', 4.269, 'BO-pv-profile', 'volatile')
 
     if showcase in 'EF':
-        update_field(
-            'volatile.csv', 'DE-wind-onshore', 'capacity', lambda x: x - 1.000,
-            directory=os.path.join(new_path, 'data/elements'))
+        substract_bordelum_profile(
+            new_path, 'DE-wind-onshore', 'capacity', 1,
+            'BO-wind-onshore-profile', 'volatile')
 
     building.infer_metadata(
         package_name='showcase-' + showcase,
