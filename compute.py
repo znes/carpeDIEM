@@ -103,7 +103,8 @@ def compute(pk):
     summary.to_csv(os.path.join(base_path, 'summary.csv'))
 
 
-packages = list("ABCDEFG") + ["SQ"]
+packages = ['2-' + i for i in list("ABCDEFG")]
+packages += ["SQ"] + ['3-' + i for i in list("ABCD")]
 
 results = os.path.expanduser('~/results')
 if not os.path.exists(results):
