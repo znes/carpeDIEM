@@ -73,16 +73,16 @@ for showcase in showcase_identifier:
             new_path, 'DE-wind-onshore', 'capacity', 1,
             'BO-wind-onshore-profile', 'volatile')
 
-    if showcase == '3-A':
+    if showcase == '3-B':
 
         element = {
             'bus': 'DE-electricity',
             'capacity': 0.18,
             'carrier': 'electricity',
-            'efficiency': 0.9,
+            'efficiency': 0.95,
             'loss': 0.0,
             'marginal_cost': 1e-7,
-            'storage_capacity': 2,
+            'storage_capacity': 0.3492,
             'storage_capacity_inital': 0,
             'tech': 'battery',
             'type': 'storage'
@@ -93,6 +93,65 @@ for showcase in showcase_identifier:
             pd.DataFrame(element, index=['DE-battery'])
         )
 
+    if showcase == '3-C':
+
+        element = {
+            'bus': 'DE-electricity',
+            'capacity': 0.865,
+            'carrier': 'electricity',
+            'efficiency': 0.95,
+            'loss': 0.0,
+            'marginal_cost': 1e-7,
+            'storage_capacity': 1.6781,
+            'storage_capacity_inital': 0,
+            'tech': 'battery',
+            'type': 'storage'
+        }
+
+        building.write_elements(
+            os.path.join(new_path, 'data', 'elements', 'battery.csv'),
+            pd.DataFrame(element, index=['DE-battery'])
+        )
+
+    if showcase == '3-D':
+
+        element = {
+            'bus': 'DE-electricity',
+            'capacity': 1,
+            'carrier': 'electricity',
+            'efficiency': 0.85,
+            'loss': 0.0,
+            'marginal_cost': 1e-7,
+            'storage_capacity': 2.263,
+            'storage_capacity_inital': 0,
+            'tech': 'battery',
+            'type': 'storage'
+        }
+
+        building.write_elements(
+            os.path.join(new_path, 'data', 'elements', 'battery.csv'),
+            pd.DataFrame(element, index=['DE-battery'])
+        )
+
+    if showcase == '3-F':
+
+        element = {
+            'bus': 'DE-electricity',
+            'capacity': 1,
+            'carrier': 'electricity',
+            'efficiency': 0.92,
+            'loss': 0.0,
+            'marginal_cost': 1e-7,
+            'storage_capacity': 0.56,
+            'storage_capacity_inital': 0,
+            'tech': 'battery',
+            'type': 'storage'
+        }
+
+        building.write_elements(
+            os.path.join(new_path, 'data', 'elements', 'battery.csv'),
+            pd.DataFrame(element, index=['DE-battery'])
+        )
 
     building.infer_metadata(
         package_name='showcase-' + showcase,
