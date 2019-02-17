@@ -9,7 +9,8 @@ import shutil
 import pandas as pd
 
 from oemof.tabular.datapackage import building, processing
-from tools import substract_bordelum_profile, connect_bordelum_residual
+from tools import substract_bordelum_profile, connect_bordelum_residual, \
+    update_field
 
 archive = 'archive'
 copypath = 'datapackages'
@@ -67,6 +68,9 @@ for showcase in showcase_identifier:
     if showcase == '2-C':
         substract_bordelum_profile(
             new_path, 'DE-pv', 'capacity', 4.269, 'BO-pv-profile', 'volatile')
+        update_field(
+            'volatile.csv', 'DE-pv', 'capacity', lambda x: x + 1.3,
+            directory=os.path.join(new_path, 'data', 'elements'))
 
     if showcase in ['2-E', '2-F']:
         substract_bordelum_profile(
@@ -112,6 +116,11 @@ for showcase in showcase_identifier:
             os.path.join(new_path, 'data', 'elements', 'battery.csv'),
             pd.DataFrame(element, index=['DE-battery'])
         )
+
+        update_field(
+            'volatile.csv', 'DE-pv', 'capacity', lambda x: x + 1.3,
+            directory=os.path.join(new_path, 'data', 'elements'))
+
 
     if showcase == '3-D':
 
