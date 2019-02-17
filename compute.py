@@ -23,7 +23,8 @@ import pyomo.core as po
 
 def compute(pk):
 
-    base_path = os.path.join(results, pk + '-' + str(datetime.now().time()))
+    base_path = os.path.join(
+        results, pk + '-' + str(datetime.now().time()).replace(':', '-'))
     input_path = os.path.join('datapackages', pk)
     output_path = os.path.join(base_path, 'output')
 
