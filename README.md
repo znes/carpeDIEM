@@ -26,19 +26,20 @@ Install the open source mixed integer programming solver Cbc (Coin-or branch and
 Clone the carpeDIEM git repository and change your working directory.
 
 `git clone https://github.com/znes/carpeDIEM.git`
+
 `cd carpeDIEM`
 
 Install required Python packages with pip.
 
- pip3 install -r requirements.txt
+`pip3 install -r requirements.txt`
 
 Run the build-script, which creates a datapackage for each carpeDIEM-scenario.
 
- python3 build.py
+`python3 build.py`
 
 Afterwards run the compute-script to optimize these energy system configurations.
 
- python3 compute.py
+`python3 compute.py`
 
 Change your directory to view the results.
 
