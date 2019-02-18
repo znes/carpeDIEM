@@ -8,7 +8,6 @@ Please install the required dependencies.
 
 `pip install -r requirements.txt`
 
-
 ## Installation from scratch
 
 In order to run the scripts written in Python on a clean install of Ubuntu Linux (Tested on Ubuntu 18.04.2 LTS) follow these steps.
@@ -17,7 +16,7 @@ Open up a terminal (Ctrl + Alt + T), a command-line interface to interact with t
 
 Install the package-installer for Python (pip) maintained by the Python Packaging Authority. With pip you can install additional Python packages from the Python Package Index (pypi).
 
-`sudo apt-get install python3-pip
+`sudo apt-get install python3-pip`
 
 Install the open source mixed integer programming solver Cbc (Coin-or branch and cut), used to solve the mathematical model representation of the electricity system.
 
