@@ -1,0 +1,2 @@
+-e git+https://github.com/oemof/oemof.git@7013f6422d9706ddee5c8f87482d4f76a1969d4f#egg=oemof
+-e git+git@github.com:oemof/oemof-tabular.git@8fc0b28fe5fdc7d155bbc47f092d8a83930c1dd2#egg=oemof.tabular
