@@ -11,7 +11,7 @@ Please install the required dependencies.
 
 ## Installation from scratch
 
-In order to run the scripts written in Python on a clean install of Ubuntu Linux follow these steps.
+In order to run the scripts written in Python on a clean install of Ubuntu Linux (Tested on Ubuntu 18.04.2 LTS) follow these steps.
 
 Open up a terminal (Ctrl + Alt + T), a command-line interface to interact with the operating system.
 
@@ -45,7 +45,6 @@ Change your directory to view the results.
 
 `cd ~/results`
 
-Tested on Ubuntu 18.04.2 LTS.
 
 ## Project
 
