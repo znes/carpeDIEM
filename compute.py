@@ -60,7 +60,7 @@ def compute(pk):
 
     m.receive_duals()
 
-    m.solve('gurobi')
+    m.solve('cbc')
 
     m.results = m.results()
 
