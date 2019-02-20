@@ -8,16 +8,15 @@ Please install the required dependencies.
 
 `pip install -r requirements.txt`
 
-
 ## Installation from scratch
 
-In order to run the scripts written in Python on a clean install of Ubuntu Linux follow these steps.
+In order to run the scripts written in Python on a clean install of Ubuntu Linux (Tested on Ubuntu 18.04.2 LTS) follow these steps.
 
 Open up a terminal (Ctrl + Alt + T), a command-line interface to interact with the operating system.
 
 Install the package-installer for Python (pip) maintained by the Python Packaging Authority. With pip you can install additional Python packages from the Python Package Index (pypi).
 
-`sudo apt-get install python3-pip
+`sudo apt-get install python3-pip`
 
 Install the open source mixed integer programming solver Cbc (Coin-or branch and cut), used to solve the mathematical model representation of the electricity system.
 
@@ -26,25 +25,25 @@ Install the open source mixed integer programming solver Cbc (Coin-or branch and
 Clone the carpeDIEM git repository and change your working directory.
 
 `git clone https://github.com/znes/carpeDIEM.git`
+
 `cd carpeDIEM`
 
 Install required Python packages with pip.
 
- pip3 install -r requirements.txt
+`pip3 install -r requirements.txt`
 
 Run the build-script, which creates a datapackage for each carpeDIEM-scenario.
 
- python3 build.py
+`python3 build.py`
 
 Afterwards run the compute-script to optimize these energy system configurations.
 
- python3 compute.py
+`python3 compute.py`
 
 Change your directory to view the results.
 
 `cd ~/results`
 
-Tested on Ubuntu 18.04.2 LTS.
 
 ## Project
 
