@@ -42,7 +42,7 @@ shutil.rmtree(os.path.join(copypath, unzip_file))
 old_path = os.path.join(copypath, "SQ", "datapackage.json")
 
 showcase_identifier = ["2-" + i for i in list("ABCDEFG")]
-showcase_identifier += ['3-A', '3-B', '3-C', '3-D']
+showcase_identifier += ['3-B', '3-C', '3-D', '3-F']
 
 for showcase in showcase_identifier:
 

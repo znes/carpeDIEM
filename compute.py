@@ -105,7 +105,7 @@ def compute(pk):
 
 
 packages = ['2-' + i for i in list("ABCDEFG")]
-packages += ["SQ"] + ['3-' + i for i in list("ABCD")]
+packages += ["SQ"] + ['3-B', '3-C', '3-D', '3-F']
 
 results = os.path.expanduser('~/results')
 if not os.path.exists(results):
