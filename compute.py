@@ -52,6 +52,7 @@ def compute(pk):
         if hasattr(m.flows[i, o], 'emission_factor'):
             flows[(i, o)] = m.flows[i, o]
 
+    # emissions by country
     for node in es.nodes:
         if isinstance(node, Bus):
             expr = sum(
@@ -83,6 +84,12 @@ def compute(pk):
     modelstats.pop("solver")
     modelstats["problem"].pop("Sense")
     modelstats["total-emissions"] = m.total_emissions()
+
+    # store emissions by country
+    for node in es.nodes:
+        if isinstance(node, Bus):
+            name = node.label.split('-')[0] + '_emissions'
+            modelstats[name] = getattr(m, name)()
 
     with open(os.path.join(base_path, "modelstats.json"), "w") as outfile:
         json.dump(modelstats, outfile, indent=4)
