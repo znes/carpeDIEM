@@ -52,6 +52,18 @@ def compute(pk):
         if hasattr(m.flows[i, o], 'emission_factor'):
             flows[(i, o)] = m.flows[i, o]
 
+    for node in es.nodes:
+        if isinstance(node, Bus):
+            expr = sum(
+                m.flow[inflow, outflow, t] * m.timeincrement[t] *
+                flows[inflow, outflow].emission_factor
+                for (inflow, outflow) in flows
+                for t in m.TIMESTEPS if outflow.label == node.label)
+            setattr(
+                m, node.label.split('-')[0] + '_emissions',
+                po.Expression(expr=expr)
+            )
+
     m.total_emissions =  po.Expression(
         expr=sum(m.flow[inflow, outflow, t] * m.timeincrement[t] *
                  flows[inflow, outflow].emission_factor
