@@ -19,12 +19,13 @@ from oemof.solph import EnergySystem, Model, Bus
 from oemof.tabular.tools import postprocessing as pp
 
 import pyomo.core as po
+import pandas as pd
 
 
 def compute(pk):
 
     base_path = os.path.join(
-        results, pk + '-' + str(datetime.now().time()).replace(':', '-'))
+        results, pk + '-' + timestamp
     input_path = os.path.join('datapackages', pk)
     output_path = os.path.join(base_path, 'output')
 
@@ -122,6 +123,8 @@ def compute(pk):
     summary = supply_sum
     summary.to_csv(os.path.join(base_path, 'summary.csv'))
 
+    return (pk, m.total_emissions())
+
 
 packages = ['2-' + i for i in list("ABCDEFG")]
 packages += ["SQ"] + ['3-B', '3-C', '3-D', '3-F']
@@ -130,9 +133,11 @@ results = os.path.expanduser('~/results')
 if not os.path.exists(results):
     os.mkdir(results)
 
+timestamp = str(datetime.now().time()).replace(':', '-')
 p = mp.Pool(4)
 
-p.map(compute, packages)
+res = p.map(compute, packages)
+pd.Series(dict(res)).to_csv(os.path.join(results, 'emissions' + '-' + timestamp + '.csv'))
 
 
 # excess_share = (
