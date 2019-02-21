@@ -134,7 +134,7 @@ if not os.path.exists(results):
     os.mkdir(results)
 
 timestamp = str(datetime.now().strftime("%Y-%m-%d-%H-%M")).replace(':', '-').replace(' ', '-')
-p = mp.Pool(4)
+p = mp.Pool(7)
 
 res = p.map(compute, packages)
 pd.Series(dict(res)).to_csv(os.path.join(results, 'emissions' + '-' + timestamp + '.csv'))
