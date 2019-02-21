@@ -133,7 +133,7 @@ results = os.path.expanduser('~/results')
 if not os.path.exists(results):
     os.mkdir(results)
 
-timestamp = str(datetime.now().time()).replace(':', '-')
+timestamp = str(datetime.now().strftime("%Y-%m-%d-%H-%M")).replace(':', '-').replace(' ', '-')
 p = mp.Pool(4)
 
 res = p.map(compute, packages)
