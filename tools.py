@@ -198,7 +198,7 @@ def connect_bordelum_residual(showcase, basepath, archive='archive'):
         index_col='timeindex'
     )[showcase]
 
-    sequence = timeseries.apply(lambda z: z if z > 0 else 0)
+    sequence = timeseries.apply(lambda z: z if z < 0 else 0).abs()
     sequence.name = 'BO-generation-profile'
 
     if sequence.sum() > 0:
@@ -222,7 +222,7 @@ def connect_bordelum_residual(showcase, basepath, archive='archive'):
         write_sequences(
             'volatile_profile.csv', sequence, directory=sequences_path)
 
-    sequence = timeseries.apply(lambda y: y if y < 0 else 0).abs()
+    sequence = timeseries.apply(lambda y: y if y > 0 else 0)
     sequence.name = 'BO-load-profile'
 
     if sequence.sum() > 0:
