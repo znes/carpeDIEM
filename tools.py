@@ -162,12 +162,12 @@ def substract_bordelum_profile(
             )[profile] * value)
 
     # clip negative values
-    seq_actual = seq_actual.apply(lambda x: x if x > 0 else 0)
+    # seq_actual = seq_actual.apply(lambda x: x if x > 0 else 0)
 
     element_new = element_old.copy()
-    element_new[field] -= value
+    element_new[field] = 1
 
-    seq_new = seq_actual / element_new[field]
+    seq_new = seq_actual
     seq_new.name = element_name + '-profile'
 
     update_element(ressource + '.csv', element_new, directory=elements_path)
@@ -232,7 +232,7 @@ def connect_bordelum_residual(showcase, basepath, archive='archive'):
             {
                 'bus': 'DE-electricity',
                 'tech': 'load',
-                'amount': sequence.sum(),
+                'amount': 1,
                 'profile': 'BO-load-profile',
                 'type': 'load'
             }
@@ -242,7 +242,7 @@ def connect_bordelum_residual(showcase, basepath, archive='archive'):
             'load.csv', pd.DataFrame(element).T, directory=elements_path)
         write_sequences(
             'load_profile.csv',
-            sequence / sequence.sum(),
+            sequence,
             directory=sequences_path
         )
 

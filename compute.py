@@ -126,15 +126,15 @@ def compute(pk):
     return (pk, m.total_emissions())
 
 
-packages = ['2-' + i for i in list("ABCDEFG")]
-packages += ["SQ"] + ['3-B', '3-C', '3-D', '3-F']
+#packages = ['2-' + i for i in list("ABCDEFG")]
+packages = ["SQ"] + ['2-A']
 
 results = os.path.expanduser('~/results')
 if not os.path.exists(results):
     os.mkdir(results)
 
 timestamp = str(datetime.now().strftime("%Y-%m-%d-%H-%M")).replace(':', '-').replace(' ', '-')
-p = mp.Pool(7)
+p = mp.Pool(1)
 
 res = p.map(compute, packages)
 pd.Series(dict(res)).to_csv(os.path.join(results, 'emissions' + '-' + timestamp + '.csv'))
