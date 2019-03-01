@@ -165,9 +165,9 @@ def substract_bordelum_profile(
     # seq_actual = seq_actual.apply(lambda x: x if x > 0 else 0)
 
     element_new = element_old.copy()
-    element_new[field] = 1
+    element_new[field] -= value
 
-    seq_new = seq_actual
+    seq_new = seq_actual / element_new[field]
     seq_new.name = element_name + '-profile'
 
     update_element(ressource + '.csv', element_new, directory=elements_path)
