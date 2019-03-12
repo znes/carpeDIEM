@@ -59,7 +59,13 @@ for showcase in showcase_identifier:
 
     if showcase == '2-G':
         substract_bordelum_profile(
-            new_path, 'DE-load', 'amount', 974 * 2, 'BO-load-profile', 'load')
+            new_path, 'DE-load', 'amount', 974 + 750, 'BO-load-profile', 'load')
+            update_field(
+                'dispatchable.csv', 'DE-biomass', 'capacity', lambda x: x - 0.875,
+                directory=os.path.join(new_path, 'data', 'elements'))
+            update_field(
+                'load.csv', 'DE-load', 'amount', lambda x: x - 750,
+                directory=os.path.join(new_path, 'data', 'elements'))
 
     if showcase in ['2-A', '2-B', '2-D', '2-E', '2-F', '2-G']:
         substract_bordelum_profile(
