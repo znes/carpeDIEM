@@ -5,6 +5,7 @@ Bordelum
 
 import os
 import shutil
+import zipfile
 
 import pandas as pd
 
@@ -24,18 +25,12 @@ os.mkdir(copypath)
 # download and move Status quo datapackage
 os.mkdir(os.path.join(copypath, 'SQ'))
 
-unzip_file = "Status-quo-2015-features-temporary-data/"
-building.download_data(
-    "https://github.com/ZNES-datapackages/Status-quo-2015/archive/features/"
-    "temporary-data.zip",
-    unzip_file=unzip_file, directory=copypath)
+zipped = zipfile.ZipFile(building.download_data(
+    'https://github.com/ZNES-datapackages/Status-quo-2015/releases/download/v0.1-alpha/Status-quo-2015.zip'
+    , directory=copypath), 'r')
 
-source = os.path.join(copypath, unzip_file, unzip_file)
-
-for f in os.listdir(source):
-    shutil.move(os.path.join(source, f), os.path.join(copypath, 'SQ'))
-
-shutil.rmtree(os.path.join(copypath, unzip_file))
+zipped.extractall(os.path.join(copypath, 'SQ'))
+zipped.close()
 
 # create all showcase datapackages by copyiing and adapting Status quo
 # datapackage
@@ -60,12 +55,12 @@ for showcase in showcase_identifier:
     if showcase == '2-G':
         substract_bordelum_profile(
             new_path, 'DE-load', 'amount', 974 + 750, 'BO-load-profile', 'load')
-            update_field(
-                'dispatchable.csv', 'DE-biomass', 'capacity', lambda x: x - 0.875,
-                directory=os.path.join(new_path, 'data', 'elements'))
-            update_field(
-                'load.csv', 'DE-load', 'amount', lambda x: x - 750,
-                directory=os.path.join(new_path, 'data', 'elements'))
+        update_field(
+            'dispatchable.csv', 'DE-biomass-biomass-1', 'capacity', lambda x: x - 0.875,
+            directory=os.path.join(new_path, 'data', 'elements'))
+        update_field(
+            'load.csv', 'DE-load', 'amount', lambda x: x - 750,
+            directory=os.path.join(new_path, 'data', 'elements'))
 
     if showcase in ['2-A', '2-B', '2-D', '2-E', '2-F', '2-G']:
         substract_bordelum_profile(
