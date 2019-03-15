@@ -82,3 +82,16 @@ for pk in datapackages.index:
 
     except XLRDError as e:
         pass
+
+    # update metadata
+    building.infer_metadata(
+        package_name=pk,
+        foreign_keys={
+            'bus': ['volatile', 'dispatchable', 'battery',
+                    'load', 'excess', 'shortage', 'ror', 'phs', 'reservoir'],
+            'profile': ['load', 'volatile', 'ror', 'reservoir'],
+            'from_to_bus': ['grid'],
+            'chp': []
+                },
+        path=path
+        )
