@@ -1,176 +1,86 @@
 # -*- coding: utf-8 -*-
-""" Build datapackages reflecting different subsystem configurations for
-Bordelum
-"""
 
-import os
 import shutil
 import zipfile
+import pathlib
+import os
 
 import pandas as pd
-
 from oemof.tabular.datapackage import building, processing
-from tools import substract_bordelum_profile, connect_bordelum_residual, \
-    update_field
 
-archive = 'archive'
-copypath = 'datapackages'
+from oemof.tabular.datapackage.processing import write_elements, write_sequences
 
-# recreate datapackages folder
-if os.path.exists(copypath):
-    shutil.rmtree(copypath)
+from xlrd import XLRDError
 
-os.mkdir(copypath)
 
-# download and move Status quo datapackage
-os.mkdir(os.path.join(copypath, 'SQ'))
+# recreate datapackages/SQ folder
+pkpath = pathlib.Path('datapackages/SQ')
+if pkpath.parent.is_dir():
+    shutil.rmtree(pkpath.parent)
+pkpath.mkdir(parents=True)
 
-zipped = zipfile.ZipFile(building.download_data(
-    'https://github.com/ZNES-datapackages/Status-quo-2015/releases/download/v0.1-alpha/Status-quo-2015.zip'
-    , directory=copypath), 'r')
+# download and unzip SQ datapackage
+pkurl = 'https://github.com/ZNES-datapackages/Status-quo-2015/releases/download/v0.1-alpha/Status-quo-2015.zip'
+zipfile.ZipFile(
+    building.download_data(pkurl, directory=pkpath), 'r'
+).extractall(pkpath)
 
-zipped.extractall(os.path.join(copypath, 'SQ'))
-zipped.close()
 
-# create all showcase datapackages by copyiing and adapting Status quo
-# datapackage
-old_path = os.path.join(copypath, "SQ", "datapackage.json")
+scenarios = pd.read_excel(os.path.join('archive', 'scenarios.xls'), index_col='identifier').index.values
 
-showcase_identifier = ["2-" + i for i in list("ABCDEFG")]
-showcase_identifier += ['3-B', '3-C', '3-D', '3-F']
+xls = 'archive/scenarios.xls'
 
-for showcase in showcase_identifier:
+for sc in scenarios:
 
-    new_path = os.path.abspath(os.path.join(copypath, showcase))
+    path = pathlib.Path(pkpath.parent, sc)
+    #path.mkdir()
 
-    processing.copy_datapackage(old_path, new_path, subset='data')
+    processing.copy_datapackage(
+        os.path.join(pkpath, 'datapackage.json'), path)
 
-    if '2' in showcase:
-        connect_bordelum_residual(showcase.split('-')[1], new_path)
+    elements_path = os.path.join(path, 'data', 'elements')
+    sequences_path = os.path.join(path, 'data', 'sequences')
 
-    if showcase in ['2-A', '2-B', '2-C', '2-D', '2-E', '2-F']:
-        substract_bordelum_profile(
-            new_path, 'DE-load', 'amount', 974, 'BO-load-profile', 'load')
+    try:
 
-    if showcase == '2-G':
-        substract_bordelum_profile(
-            new_path, 'DE-load', 'amount', 974 + 750, 'BO-load-profile', 'load')
-        update_field(
-            'dispatchable.csv', 'DE-biomass-biomass-1', 'capacity', lambda x: x - 0.875,
-            directory=os.path.join(new_path, 'data', 'elements'))
-        update_field(
-            'load.csv', 'DE-load', 'amount', lambda x: x - 750,
-            directory=os.path.join(new_path, 'data', 'elements'))
+        timeseries = pd.read_excel(xls, sheet_name='timeseries' + '-' + sc)
+        timeseries.set_index(pd.date_range('2015-01-01 00:00:00', '2015-12-31 23:00:00', freq='H'), inplace=True)
+        timeseries = timeseries['Sum']
 
-    if showcase in ['2-A', '2-B', '2-D', '2-E', '2-F', '2-G']:
-        substract_bordelum_profile(
-            new_path, 'DE-pv', 'capacity', 2.94, 'BO-pv-profile', 'volatile')
-
-    if showcase == '2-C':
-        substract_bordelum_profile(
-            new_path, 'DE-pv', 'capacity', 4.269, 'BO-pv-profile', 'volatile')
-        update_field(
-            'volatile.csv', 'DE-pv', 'capacity', lambda x: x + 1.3,
-            directory=os.path.join(new_path, 'data', 'elements'))
-
-    if showcase in ['2-E', '2-F']:
-        substract_bordelum_profile(
-            new_path, 'DE-wind-onshore', 'capacity', 1,
-            'BO-wind-onshore-profile', 'volatile')
-
-    if showcase == '3-B':
+        sequence = timeseries.apply(lambda z: z if z > 0 else 0)
+        sequence.name = 'BO-plus-profile'
 
         element = {
-            'bus': 'DE-electricity',
-            'capacity': 0.18,
-            'carrier': 'electricity',
-            'efficiency': 0.95,
-            'loss': 0.0,
-            'marginal_cost': 1e-7,
-            'storage_capacity': 0.3492,
-            'storage_capacity_inital': 0,
-            'tech': 'battery',
-            'type': 'storage'
+            'BO-plus':
+            {
+                'bus': 'DE-electricity',
+                'capacity': 1,
+                'profile': 'BO-plus-profile',
+                'type': 'volatile'
+            }
         }
 
-        building.write_elements(
-            os.path.join(new_path, 'data', 'elements', 'battery.csv'),
-            pd.DataFrame(element, index=['DE-battery'])
-        )
+        write_elements(
+            'volatile.csv', pd.DataFrame(element).T, directory=elements_path)
+        write_sequences(
+            'volatile_profile.csv', sequence, directory=sequences_path)
 
-    if showcase == '3-C':
+        sequence = timeseries.apply(lambda y: y if y < 0 else 0).abs()
+        sequence.name = 'BO-minus-profile'
 
         element = {
-            'bus': 'DE-electricity',
-            'capacity': 0.865,
-            'carrier': 'electricity',
-            'efficiency': 0.95,
-            'loss': 0.0,
-            'marginal_cost': 1e-7,
-            'storage_capacity': 1.6781,
-            'storage_capacity_inital': 0,
-            'tech': 'battery',
-            'type': 'storage'
+            'BO-minus':
+            {
+                'bus': 'DE-electricity',
+                'amount': 1,
+                'profile': 'BO-minus-profile',
+                'type': 'load'
+            }
         }
 
-        building.write_elements(
-            os.path.join(new_path, 'data', 'elements', 'battery.csv'),
-            pd.DataFrame(element, index=['DE-battery'])
-        )
+        write_elements(
+            'load.csv', pd.DataFrame(element).T, directory=elements_path)
+        write_sequences('load_profile.csv', sequence, directory=sequences_path)
 
-        update_field(
-            'volatile.csv', 'DE-pv', 'capacity', lambda x: x + 1.3,
-            directory=os.path.join(new_path, 'data', 'elements'))
-
-
-    if showcase == '3-D':
-
-        element = {
-            'bus': 'DE-electricity',
-            'capacity': 1,
-            'carrier': 'electricity',
-            'efficiency': 0.85,
-            'loss': 0.0,
-            'marginal_cost': 1e-7,
-            'storage_capacity': 2.263,
-            'storage_capacity_inital': 0,
-            'tech': 'battery',
-            'type': 'storage'
-        }
-
-        building.write_elements(
-            os.path.join(new_path, 'data', 'elements', 'battery.csv'),
-            pd.DataFrame(element, index=['DE-battery'])
-        )
-
-    if showcase == '3-F':
-
-        element = {
-            'bus': 'DE-electricity',
-            'capacity': 1,
-            'carrier': 'electricity',
-            'efficiency': 0.92,
-            'loss': 0.0,
-            'marginal_cost': 1e-7,
-            'storage_capacity': 0.56,
-            'storage_capacity_inital': 0,
-            'tech': 'battery',
-            'type': 'storage'
-        }
-
-        building.write_elements(
-            os.path.join(new_path, 'data', 'elements', 'battery.csv'),
-            pd.DataFrame(element, index=['DE-battery'])
-        )
-
-    building.infer_metadata(
-        package_name='showcase-' + showcase,
-        foreign_keys={
-            'bus': ['volatile', 'dispatchable', 'battery',
-                    'load', 'excess', 'shortage', 'ror', 'phs', 'reservoir'],
-            'profile': ['load', 'volatile', 'ror', 'reservoir'],
-            'from_to_bus': ['grid'],
-            'chp': []
-                },
-        path=new_path
-        )
+    except XLRDError as e:
+        pass
