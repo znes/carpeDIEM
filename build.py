@@ -30,8 +30,13 @@ zipfile.ZipFile(
 
 # load archived data
 xls = './archive/data.xls'
-datapackages = pd.read_excel(xls, index_col='identifier')
+datapackages = pd.read_excel(
+    xls, sheet_name='scenarios', index_col='identifier')
 
+storages = pd.read_excel(xls, sheet_name='storages', index_col='name')
+
+# based on data.xls the reference datapackage is copied for each scenario
+# and updated
 for pk in datapackages.index:
 
     # declare paths
@@ -42,45 +47,55 @@ for pk in datapackages.index:
     # copy datapackage
     processing.copy_datapackage(os.path.join(base, 'datapackage.json'), path)
 
-    # fetch timeseries data
+    # try add storages
+    try:
+
+        building.write_elements(
+            'battery.csv',
+            storages.loc[[pk], :].rename(index={pk: pk + '-battery'}),
+            directory=os.path.join(epath)
+        )
+
+        print('Added storage in datapackage %s.' % pk)
+
+    except KeyError as e:
+        pass
+
+    # try fetch timeseries data
     try:
 
         # TODO: parse dates from xls file
-        timesteps = pd.date_range('2015-01-01 00:00:00', '2015-12-31 23:00:00', freq='H')
+        timesteps = pd.date_range(
+            '2015-01-01 00:00:00', '2015-12-31 23:00:00', freq='H')
 
         ts = pd.read_excel(
                 xls, sheet_name='timeseries' + '-' + pk
-            ).set_index(timesteps)['Sum']
+            ).set_index(timesteps)['net_balance']
 
-        positive = ts.apply(lambda x: x if x > 0 else 0)
-        positive.name = 'BO-plus-profile'
+        df = pd.read_excel(
+            xls, sheet_name='r_timeseries_components').set_index('name')
 
-        negative = ts.apply(lambda x: x if x < 0 else 0).abs()
-        negative.name = 'BO-minus-profile'
+        element = df.loc[['TS-pos-residual'], :]
 
-        # positive values represent a net generation for the macro-system
-        header = ['bus', 'capacity', 'profile', 'type']
-        data = ['DE-electricity', 1, 'BO-plus-profile', 'volatile']
+        write_elements(
+            'volatile.csv', element, directory=epath)
 
-        element = pd.DataFrame({
-            'BO-plus': dict(zip(header, data))
-        }).T
+        write_sequences(
+            'volatile_profile.csv',
+            ts.apply(lambda x: x if x > 0 else 0).rename(element.profile[0]),
+            directory=spath)
 
-        write_elements('volatile.csv', element, directory=epath)
-        write_sequences('volatile_profile.csv', positive, directory=spath)
-
-        # negative values represent a net demand for the macro-system
-        header = ['bus', 'amount', 'profile', 'type']
-        data = ['DE-electricity', 1, 'BO-minus-profile', 'load']
-
-        element = pd.DataFrame({
-            'BO-minus': dict(zip(header, data))
-        }).T
+        element = df.loc[['TS-neg-residual'], :]
 
         write_elements('load.csv', element, directory=epath)
-        write_sequences('load_profile.csv', negative, directory=spath)
+
+        write_sequences(
+            'load_profile.csv',
+            ts.apply(lambda x: x if x < 0 else 0).rename(element.profile[0]),
+            directory=spath)
 
     except XLRDError as e:
+        print('Warning: No timeseries data found for package %s.' % pk)
         pass
 
     # update metadata
