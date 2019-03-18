@@ -1,22 +1,53 @@
 # carpeDIEM
 
-Builds showcase datapackages in the context of the carpeDIEM project by downloading and updating the ZNES Status-quo datapackage.  
+Builds showcase datapackages in the context of the carpeDIEM project by downloading and updating the ZNES Status-quo datapackage.
 
 ## Installation
 
-Please install the required dependencies.  
+Please install the required dependencies.
 
 `pip install -r requirements.txt`
 
-## Build packages and compute
+## Installation from scratch
 
-`python build.py`
+In order to run the scripts written in Python on a clean install of Ubuntu Linux (Tested on Ubuntu 18.04.2 LTS) follow these steps.
 
-`python compute.py`
+Open up a terminal (Ctrl + Alt + T), a command-line interface to interact with the operating system.
+
+Install the package-installer for Python (pip) maintained by the Python Packaging Authority. With pip you can install additional Python packages from the Python Package Index (pypi).
+
+`sudo apt-get install python3-pip`
+
+Install the open source mixed integer programming solver Cbc (Coin-or branch and cut), used to solve the mathematical model representation of the electricity system.
+
+`sudo apt-get install coinor-cbc`
+
+Clone the carpeDIEM git repository and change your working directory.
+
+`git clone https://github.com/znes/carpeDIEM.git`
+
+`cd carpeDIEM`
+
+Install required Python packages with pip.
+
+`pip3 install -r requirements.txt`
+
+Run the build-script, which creates a datapackage for each carpeDIEM-scenario.
+
+`python3 build.py`
+
+Afterwards run the compute-script to optimize these energy system configurations.
+
+`python3 compute.py`
+
+Change your directory to view the results.
+
+`cd ~/results`
+
 
 ## Project
 
-An electricity sub-system / micro-system, e.g. a municipality, is analysed in the context of a so-called macro-system, e.g. a national state. The sub-system, Bordelum, is pre-optimized independently from the macro-system with a focus on varying degrees of autarky. As such it is a showcase for the effects of autarkic sub-systems in a minimal cost optimized German electricity system. 
+An electricity sub-system / micro-system, e.g. a municipality, is analysed in the context of a so-called macro-system, e.g. a national state. The sub-system, Bordelum, is pre-optimized independently from the macro-system with a focus on varying degrees of autarky. As such it is a showcase for the effects of autarkic sub-systems in a minimal cost optimized German electricity system.
 
 ## Showase system settings
 

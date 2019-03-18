@@ -19,12 +19,13 @@ from oemof.solph import EnergySystem, Model, Bus
 from oemof.tabular.tools import postprocessing as pp
 
 import pyomo.core as po
+import pandas as pd
 
 
 def compute(pk):
 
     base_path = os.path.join(
-        results, pk + '-' + str(datetime.now().time()).replace(':', '-'))
+        results, pk + '-' + timestamp)
     input_path = os.path.join('datapackages', pk)
     output_path = os.path.join(base_path, 'output')
 
@@ -52,6 +53,19 @@ def compute(pk):
         if hasattr(m.flows[i, o], 'emission_factor'):
             flows[(i, o)] = m.flows[i, o]
 
+    # emissions by country
+    for node in es.nodes:
+        if isinstance(node, Bus):
+            expr = sum(
+                m.flow[inflow, outflow, t] * m.timeincrement[t] *
+                flows[inflow, outflow].emission_factor
+                for (inflow, outflow) in flows
+                for t in m.TIMESTEPS if outflow.label == node.label)
+            setattr(
+                m, node.label.split('-')[0] + '_emissions',
+                po.Expression(expr=expr)
+            )
+
     m.total_emissions =  po.Expression(
         expr=sum(m.flow[inflow, outflow, t] * m.timeincrement[t] *
                  flows[inflow, outflow].emission_factor
@@ -71,6 +85,12 @@ def compute(pk):
     modelstats.pop("solver")
     modelstats["problem"].pop("Sense")
     modelstats["total-emissions"] = m.total_emissions()
+
+    # store emissions by country
+    for node in es.nodes:
+        if isinstance(node, Bus):
+            name = node.label.split('-')[0] + '_emissions'
+            modelstats[name] = getattr(m, name)()
 
     with open(os.path.join(base_path, "modelstats.json"), "w") as outfile:
         json.dump(modelstats, outfile, indent=4)
@@ -103,17 +123,21 @@ def compute(pk):
     summary = supply_sum
     summary.to_csv(os.path.join(base_path, 'summary.csv'))
 
+    return (pk, m.total_emissions())
+
 
 packages = ['2-' + i for i in list("ABCDEFG")]
-packages += ["SQ"] + ['3-' + i for i in list("ABCD")]
+packages = ["SQ"] + ['3-B', '3-C', '3-D', '3-F']
 
 results = os.path.expanduser('~/results')
 if not os.path.exists(results):
     os.mkdir(results)
 
-p = mp.Pool(4)
+timestamp = str(datetime.now().strftime("%Y-%m-%d-%H-%M")).replace(':', '-').replace(' ', '-')
+p = mp.Pool(1)
 
-p.map(compute, packages)
+res = p.map(compute, packages)
+pd.Series(dict(res)).to_csv(os.path.join(results, 'emissions' + '-' + timestamp + '.csv'))
 
 
 # excess_share = (
