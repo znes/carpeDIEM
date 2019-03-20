@@ -119,7 +119,7 @@ def compute(pk):
     summary = supply_sum
     summary.to_csv(os.path.join(base_path, 'summary.csv'))
 
-    return (pk, m.total_emissions())
+    return (pk, modelstats['objective'], m.total_emissions())
 
 
 packages = ['2' + i for i in list("ABCDEFG")] + ['SQ'] + ['3B', '3C', '3D', '3F']
@@ -131,5 +131,7 @@ if not os.path.exists(results):
 timestamp = str(datetime.now().strftime("%Y-%m-%d-%H-%M")).replace(':', '-').replace(' ', '-')
 p = mp.Pool(7)
 
-res = p.map(compute, packages)
-pd.Series(dict(res)).to_csv(os.path.join(results, 'emissions' + '-' + timestamp + '.csv'))
+container = p.map(compute, packages)
+pd.DataFrame(
+    container, columns=['datapackage', 'objective', 'emissions']
+).to_csv(os.path.join(results, 'summary' + '-' + timestamp + '.csv'), index=False)
