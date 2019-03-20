@@ -44,10 +44,6 @@ def compute(pk):
 
     m = Model(es)
 
-    # m.write(
-    #     os.path.join(base_path, 'tmp.lp'),
-    #     io_options={"symbolic_solver_labels":True})
-
     flows = {}
     for (i, o) in m.flows:
         if hasattr(m.flows[i, o], 'emission_factor'):
