@@ -25,7 +25,7 @@ os.mkdir(dpkg)
 zipfile.ZipFile(
     building.download_data(
         'https://github.com/ZNES-datapackages/Status-quo-2015/releases/'
-        'download/v0.1-alpha/Status-quo-2015.zip',
+        'download/v0.1-beta/Status-quo-2015.zip',
         directory=dpkg), 'r').extractall(base)
 
 # load archived data
