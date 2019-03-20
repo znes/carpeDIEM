@@ -7,7 +7,7 @@ import os
 
 import pandas as pd
 from oemof.tabular.datapackage import building, processing
-from oemof.tabular.datapackage.processing import \
+from oemof.tabular.datapackage.building import \
     write_elements, write_sequences
 
 from xlrd import XLRDError
