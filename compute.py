@@ -122,7 +122,7 @@ def compute(pk):
     return (pk, modelstats['objective'], m.total_emissions())
 
 
-packages = ['2' + i for i in list("ABCDEFG")] + ['SQ'] + ['3B', '3C', '3D', '3F']
+packages = ['2' + i for i in list("ABCDEFG")] + ['SQ'] + ['3B', '3C', '3D', '3F'] + ['4B', '4C']
 
 results = os.path.expanduser('~/results')
 if not os.path.exists(results):
