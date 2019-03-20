@@ -91,7 +91,7 @@ for pk in datapackages.index:
 
         write_sequences(
             'load_profile.csv',
-            ts.apply(lambda x: x if x < 0 else 0).rename(element.profile[0]),
+            ts.apply(lambda x: x if x < 0 else 0).abs().rename(element.profile[0]),
             directory=spath)
 
     except XLRDError as e:
