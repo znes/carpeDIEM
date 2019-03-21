@@ -1,6 +1,29 @@
 # carpeDIEM
 
-The repository provides scripts to build carpeDIEM energy datapackages in directory datapackages/ and to solve the defined systems towards least-cost optimality. carpeDIEM itself contains only two short scripts, build.py and compute.py, because it relies on the Open Energy Modeling Framework - oemof. These datapackages are based on a reference scenario developed at [https://github.com/ZNES-datapackages/Status-quo-2015].
+The repository provides scripts to build carpeDIEM energy datapackages in directory datapackages/ and to solve the defined systems towards least-cost optimality. carpeDIEM itself contains only two short scripts, build.py and compute.py, because it relies on the Open Energy Modeling Framework - oemof. These datapackages are based on a reference input dataset developed at [https://github.com/ZNES-datapackages/Status-quo-2015].
+
+## data.xls
+
+Data on the preoptimized sub-system is contained in a separate xls file.
+
+```
+--| scenarios
+
+Contains a short-list of scenario labels and names.
+
+--| timeseries-2A --| timeseries-2B ...
+
+Timeseries data especially for the isolated approach with an effect to the German electricity hub. On the one hand pre-optimized residual load timeseries of the sub-system and on the other hand demand or generation no longer associated with the macro-system. The net-balance is connected to the German eletricity bus.
+
+--| r_residuals --| r_profiles
+
+Preoptimized timeseries of the sub-system. Wind, pv and load profile of the sub-system.
+
+--| r_aux
+
+In essence auxiliary values, with which the profiles of the sub-system get multiplied.
+
+```
 
 ## Installation
 
