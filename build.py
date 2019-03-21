@@ -4,13 +4,15 @@
 import shutil
 import zipfile
 import os
+import operator as op
 
 import pandas as pd
 from oemof.tabular.datapackage import building, processing
-from oemof.tabular.datapackage.processing import \
+from oemof.tabular.datapackage.building import \
     write_elements, write_sequences
 
 from xlrd import XLRDError
+from tools import update_field
 
 # path handling
 dpkg = './datapackages'
@@ -25,7 +27,7 @@ os.mkdir(dpkg)
 zipfile.ZipFile(
     building.download_data(
         'https://github.com/ZNES-datapackages/Status-quo-2015/releases/'
-        'download/v0.1-alpha/Status-quo-2015.zip',
+        'download/v0.1-beta/Status-quo-2015.zip',
         directory=dpkg), 'r').extractall(base)
 
 # load archived data
@@ -34,6 +36,8 @@ datapackages = pd.read_excel(
     xls, sheet_name='scenarios', index_col='identifier')
 
 storages = pd.read_excel(xls, sheet_name='storages', index_col='name')
+
+adaptations = pd.read_excel(xls, sheet_name='adaptations', index_col='scenario')
 
 # based on data.xls the reference datapackage is copied for each scenario
 # and updated
@@ -46,6 +50,17 @@ for pk in datapackages.index:
 
     # copy datapackage
     processing.copy_datapackage(os.path.join(base, 'datapackage.json'), path)
+
+    # update single value entries in copied datapackage
+    if pk in adaptations.index:
+
+        op = {'substract': op.sub, 'add': op.add}
+
+        for i, r in adaptations.loc[[pk], :].iterrows():
+
+            func = lambda x: op[r.operation](x, r.value)
+
+            update_field(r.resource, r.label, r.param, func, directory=epath)
 
     # try add storages
     try:
@@ -91,7 +106,7 @@ for pk in datapackages.index:
 
         write_sequences(
             'load_profile.csv',
-            ts.apply(lambda x: x if x < 0 else 0).rename(element.profile[0]),
+            ts.apply(lambda x: x if x < 0 else 0).abs().rename(element.profile[0]),
             directory=spath)
 
     except XLRDError as e:

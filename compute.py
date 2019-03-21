@@ -44,10 +44,6 @@ def compute(pk):
 
     m = Model(es)
 
-    # m.write(
-    #     os.path.join(base_path, 'tmp.lp'),
-    #     io_options={"symbolic_solver_labels":True})
-
     flows = {}
     for (i, o) in m.flows:
         if hasattr(m.flows[i, o], 'emission_factor'):
@@ -123,39 +119,19 @@ def compute(pk):
     summary = supply_sum
     summary.to_csv(os.path.join(base_path, 'summary.csv'))
 
-    return (pk, m.total_emissions())
+    return (pk, modelstats['objective'], m.total_emissions())
 
 
-packages = ['2-' + i for i in list("ABCDEFG")]
-packages = ["SQ"] + ['3-B', '3-C', '3-D', '3-F']
+packages = ['2' + i for i in list("ABCDEFG")] + ['SQ'] + ['3B', '3C', '3D', '3F'] + ['4B', '4C']
 
 results = os.path.expanduser('~/results')
 if not os.path.exists(results):
     os.mkdir(results)
 
 timestamp = str(datetime.now().strftime("%Y-%m-%d-%H-%M")).replace(':', '-').replace(' ', '-')
-p = mp.Pool(1)
+p = mp.Pool(7)
 
-res = p.map(compute, packages)
-pd.Series(dict(res)).to_csv(os.path.join(results, 'emissions' + '-' + timestamp + '.csv'))
-
-
-# excess_share = (
-#     excess.sum() * config["temporal-resolution"] / 1e6
-# ) / supply_sum.sum(axis=1)
-# excess_share.name = "excess"
-
-
-# emissions
-#cemissions = views.node_output_by_type(m.results, node_type=es.typemap['dispatchable'])
-#emissions = emissions.loc[:, [c for c in emissions.columns.get_level_values(0) if c.tech != None]]  # filter shortage
-#emissions = emissions.apply(lambda x: x * float(ef[(x.name[0].label.split('-')[1])])).T.groupby('to').sum().T.sum()
-#emissions.to_csv(os.path.join(scenario_path, 'emissions.csv'))
-
-
-#ef = pd.DataFrame(
-#    Package('https://raw.githubusercontent.com/ZNES-datapackages/technology-cost/features/add-2015-data/datapackage.json')
-#    .get_resource('carrier').read(keyed=True)).set_index(
-#        ['year', 'carrier', 'parameter', 'unit']).sort_index() \
-#    .loc[(2015, slice(None), 'emission-factor', 't (CO2)/MWh'), :] \
-#    .reset_index().set_index('carrier')['value']
+container = p.map(compute, packages)
+pd.DataFrame(
+    container, columns=['datapackage', 'objective', 'emissions']
+).to_csv(os.path.join(results, 'summary' + '-' + timestamp + '.csv'), index=False)
