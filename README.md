@@ -1,6 +1,6 @@
 # carpeDIEM
 
-The repository provides scripts to build carpeDIEM energy datapackages in directory datapackages/ and to solve the defined systems towards least-cost optimality. carpeDIEM itself contains only two short scripts, build.py and compute.py, because it relies on the Open Energy Modeling Framework - oemof. These datapackages are based on a reference input dataset developed at [https://github.com/ZNES-datapackages/Status-quo-2015].
+The repository provides scripts to build carpeDIEM (http://project-carpediem.eu/) energy datapackages in directory datapackages/ and to solve the defined systems towards least-cost optimality. carpeDIEM itself contains only two short scripts, build.py and compute.py, because it relies on the Open Energy Modeling Framework - oemof. These datapackages are based on a reference input dataset developed at https://github.com/ZNES-datapackages/Status-quo-2015.
 
 ## data.xls
 
