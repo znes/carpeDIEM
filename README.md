@@ -13,7 +13,10 @@ Contains a short-list of scenario labels and names.
 
 --| timeseries-2A --| timeseries-2B ...
 
-Timeseries data especially for the isolated approach with an effect to the German electricity hub. On the one hand pre-optimized residual load timeseries of the sub-system and on the other hand demand or generation no longer associated with the macro-system. The net-balance is connected to the German eletricity bus.
+Timeseries data especially for the isolated approach with an effect to the German electricity hub.
+On the one hand pre-optimized residual load timeseries of the sub-system and on the other hand
+demand or generation no longer associated with the macro-system. The net-balance is connected to
+the German eletricity bus.
 
 --| r_residuals --| r_profiles
 
@@ -22,7 +25,6 @@ Preoptimized timeseries of the sub-system. Wind, pv and load profile of the sub-
 --| r_aux
 
 In essence auxiliary values, with which the profiles of the sub-system get multiplied.
-
 ```
 
 ## Installation
