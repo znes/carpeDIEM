@@ -6,9 +6,9 @@ The repository provides scripts to build carpeDIEM energy datapackages in direct
 
 Please install the required dependencies.
 
-	pip install pip==18.1
+	pip install six
 
-	pip install --process-dependency-links -U -r requirements.txt
+	pip install --no-deps -r requirements.txt
 
 ## Installation from scratch
 
@@ -32,7 +32,9 @@ Clone the carpeDIEM git repository and change your working directory.
 
 Install required Python packages with pip.
 
-	pip3 install -r requirements.txt
+	pip3 install six
+
+	pip3 install --no-deps -r requirements.txt
 
 Run the build-script, which creates a datapackage for each carpeDIEM-scenario.
 
