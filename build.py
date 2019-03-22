@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-""" """
+""" build.py
+
+Does download and unzip the pre-packaged Status-quo datapackage. 
+Based on this reference datapackage the carpeDIEM scenario datapackages
+are built.
+"""
 
 import shutil
 import zipfile
