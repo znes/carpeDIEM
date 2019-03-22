@@ -1,4 +1,12 @@
-"""
+""" compute.py
+
+This script loads datapackages in the datapackages/ folder, 
+construct an oemof-model for each, solves the mathematical model 
+to minimum-cost optimality and writes back the results to ~/results.
+
+TODO: This should be a command-line-interface program with
+potentially the following options.
+
 --solver
 --clean results-folder
 --cpu-cores
